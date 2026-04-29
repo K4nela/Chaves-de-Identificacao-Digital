@@ -1,9 +1,10 @@
-TOTAL_ETAPAS = 3  # ajuste conforme o número de perguntas
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Estrutura de dados para a árvore de decisão
+TOTAL_ETAPAS = 4  # número total de perguntas
+
+# Árvore de decisão
 arvore = {
     "inicio": {
         "pergunta": "A aranha vive em toca no solo?",
@@ -30,42 +31,46 @@ arvore = {
     }
 }
 
-# Mapeamento de etapas para números 
+# Etapas (para barra de progresso)
 etapas_numero = {
     "inicio": 1,
     "p2": 2,
-    "p3": 3
+    "p3": 3,
+    "p4": 4
 }
 
-# Resultados finais
-resultados = {
-    "caranguejeira": {
+# "Banco de dados"
+resultados = [
+    {
         "nome": "Caranguejeira",
-        "descricao": "Aranhas grandes e peludas, comuns em regiões tropicais.",
-        "habitat": "Vivem em tocas no solo.",
+        "tipo": "caranguejeira",
+        "habitat": "toca",
+        "descricao": "Aranha grande e peluda, comum em regiões tropicais.",
         "imagem": "caranguejeira.jpg"
     },
-    "aranha_alcapao": {
+    {
         "nome": "Aranha de Alçapão",
+        "tipo": "aranha_alcapao",
+        "habitat": "solo",
         "descricao": "Constrói portas camufladas no solo.",
-        "habitat": "Tocas com tampa.",
         "imagem": "alcapao.jpg"
     },
-    "migalomorfa": {
+    {
         "nome": "Migalomorfa",
-        "descricao": "Grupo de aranhas primitivas.",
-        "habitat": "Solo e troncos.",
+        "tipo": "migalomorfa_pequena",
+        "habitat": "solo",
+        "descricao": "Pequenas aranhas migalomorfas discretas.",
         "imagem": "migalomorfa.jpg"
     }
-}
+]
 
-# Rota para a página inicial
+# Home
 @app.route('/')
 def home():
     return render_template("home.html")
 
 
-# Rota para iniciar o quiz
+# Início do quiz
 @app.route("/quiz")
 def quiz():
     etapa = "inicio"
@@ -78,7 +83,8 @@ def quiz():
         progresso=progresso
     )
 
-# Rota para processar as respostas
+
+# Processar respostas
 @app.route("/responder", methods=["POST"])
 def responder():
     etapa = request.form["etapa"]
@@ -86,11 +92,21 @@ def responder():
 
     proximo = arvore[etapa][resposta]
 
-    # Se for resultado final
+    # Resultado final
     if proximo not in arvore:
-        resultado_final = resultados[proximo]
-        return render_template("resultado.html", resultado=resultado_final)
+        for r in resultados:
+            if r["tipo"] == proximo:
+                return render_template("resultado.html", resultado=r)
 
+        # fallback
+        return render_template("resultado.html", resultado={
+            "nome": "Não identificado",
+            "descricao": "Não foi possível identificar.",
+            "habitat": "-",
+            "imagem": "erro.jpg"
+        })
+
+    # próxima pergunta
     progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
 
     return render_template(
@@ -99,13 +115,39 @@ def responder():
         pergunta=arvore[proximo]["pergunta"],
         progresso=progresso
     )
-    # Se ainda for pergunta
-    return render_template(
-        "pergunta.html",
-        etapa=proximo,
-        pergunta=arvore[proximo]["pergunta"]
-    )
+
+
+# Página de filtro
+@app.route("/filtro")
+def filtro():
+    return render_template("filtro.html")
+
+
+# Resultado do filtro 
+@app.route("/resultado_filtro", methods=["POST"])
+def resultado_filtro():
+    tipo = request.form["tipo"]
+    habitat = request.form["habitat"]
+
+    resultados_filtrados = []
+
+    for aracnideo in resultados:
+        if (not tipo or aracnideo["tipo"] == tipo) and \
+           (not habitat or aracnideo["habitat"] == habitat):
+            resultados_filtrados.append(aracnideo)
+
+    # se encontrou
+    if resultados_filtrados:
+        return render_template("resultado.html", resultado=resultados_filtrados[0])
+
+    # se não encontrou
+    return render_template("resultado.html", resultado={
+        "nome": "Não encontrado",
+        "descricao": "Nenhum aracnídeo corresponde aos filtros.",
+        "habitat": "-",
+        "imagem": "erro.jpg"
+    })
+
 
 if __name__ == '__main__':
-    app.run(debug = True)
-
+    app.run(debug=True)
