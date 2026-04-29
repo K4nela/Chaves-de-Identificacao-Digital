@@ -79,9 +79,45 @@
 
         .progresso {
             height: 10px;
-            background-color: #6b8e23;
-            width: 30%; /* depois podemos deixar dinâmico */
+            background: linear-gradient(90deg, #6b8e23, #8fbc8f);
+            width: 0%;
+            transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
+
+        .progresso::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 50%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-25deg);
+            animation: brilho 2s infinite;
+        }
+
+        @keyframes brilho {
+            0% { left: -50%; }
+            100% { left: 120%; }
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: aparecer 0.6s ease forwards;
+        }
+
+        @keyframes aparecer {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
     </style>
 </head>
 
@@ -95,7 +131,7 @@
 
     <!-- Barra de progresso -->
     <div class="progresso-container">
-        <div class="progresso"></div>
+        <div class="progresso" id="barra"></div>
     </div>
 
     <div class="card">
@@ -121,6 +157,21 @@
     </div>
 
 </div>
+
+<script>
+    (function() {
+        const barra = document.getElementById("barra");
+        const progressoValor = parseInt("{{ progresso }}");
+
+        if (barra) {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    barra.style.width = progressoValor + "%";
+                }, 150);
+            });
+        }
+    })();
+</script>
 
 </body>
 </html>

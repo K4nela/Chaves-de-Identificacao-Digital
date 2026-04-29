@@ -1,3 +1,4 @@
+TOTAL_ETAPAS = 3  # ajuste conforme o número de perguntas
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -27,6 +28,13 @@ arvore = {
         "sim": "migalomorfa_pequena",
         "nao": "migalomorfa_desconhecida"
     }
+}
+
+# Mapeamento de etapas para números 
+etapas_numero = {
+    "inicio": 1,
+    "p2": 2,
+    "p3": 3
 }
 
 # Resultados finais
@@ -60,10 +68,14 @@ def home():
 # Rota para iniciar o quiz
 @app.route("/quiz")
 def quiz():
+    etapa = "inicio"
+    progresso = int((etapas_numero[etapa] / TOTAL_ETAPAS) * 100)
+
     return render_template(
         "pergunta.html",
-        etapa="inicio",
-        pergunta=arvore["inicio"]["pergunta"]
+        etapa=etapa,
+        pergunta=arvore[etapa]["pergunta"],
+        progresso=progresso
     )
 
 # Rota para processar as respostas
@@ -76,9 +88,17 @@ def responder():
 
     # Se for resultado final
     if proximo not in arvore:
-        resultado_final = resultados.get(proximo, proximo)
+        resultado_final = resultados[proximo]
         return render_template("resultado.html", resultado=resultado_final)
 
+    progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
+
+    return render_template(
+        "pergunta.html",
+        etapa=proximo,
+        pergunta=arvore[proximo]["pergunta"],
+        progresso=progresso
+    )
     # Se ainda for pergunta
     return render_template(
         "pergunta.html",
