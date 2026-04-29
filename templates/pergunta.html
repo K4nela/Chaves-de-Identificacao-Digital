@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Pergunta</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f2;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .topo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .titulo {
+            font-size: 28px;
+            color: #4b6b2c;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .pergunta {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .botao {
+            background-color: #6b8e23;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 150px;
+        }
+
+        .botao:hover {
+            background-color: #5a7a1e;
+        }
+
+        .voltar {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .voltar a {
+            text-decoration: none;
+            color: #555;
+        }
+
+        .progresso-container {
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progresso {
+            height: 10px;
+            background-color: #6b8e23;
+            width: 30%; /* depois podemos deixar dinâmico */
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topo">
+        <h1 class="titulo">Identificação Guiada</h1>
+    </div>
+
+    <!-- Barra de progresso -->
+    <div class="progresso-container">
+        <div class="progresso"></div>
+    </div>
+
+    <div class="card">
+        <h2 class="pergunta">{{ pergunta }}</h2>
+
+        <form action="/responder" method="post">
+            <input type="hidden" name="etapa" value="{{ etapa }}">
+
+            <div class="botoes">
+                <button type="submit" name="resposta" value="sim" class="botao">
+                    ✔ Sim
+                </button>
+
+                <button type="submit" name="resposta" value="nao" class="botao">
+                    ✖ Não
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="voltar">
+        <a href="/">← Voltar ao início</a>
+    </div>
+
+</div>
+
+</body>
+</html>

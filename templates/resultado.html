@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultado</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f2;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .topo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background-color: #d4edda;
+            color: #2e7d32;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .card {
+            background-color: #e8f0dc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .imagem {
+            width: 300px;
+            height: 300px;
+            border: 2px solid #6b8e23;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .titulo {
+            font-size: 28px;
+            color: #4b6b2c;
+        }
+
+        .botoes {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .botao {
+            background-color: #6b8e23;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .botao:hover {
+            background-color: #5a7a1e;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="topo">
+        <div class="badge">✔ Identificação Concluída!</div>
+    </div>
+
+    <div class="card">
+        <h2>Histórico da Identificação</h2>
+        <p>Você chegou ao resultado final com base nas respostas.</p>
+    </div>
+
+    <div class="grid">
+
+        <img class="imagem" src="{{ url_for('static', filename=resultado.imagem) }}">
+
+        <div class="info">
+            <h1 class="titulo">{{ resultado.nome }}</h1>
+
+            <div class="box">
+                <h3>Habitat Natural</h3>
+                <p>{{ resultado.habitat }}</p>
+            </div>
+
+            <div class="box">
+                <h3>Descrição</h3>
+                <p>{{ resultado.descricao }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card">
+        <h2>Características Principais</h2>
+        <ul>
+            <li>Quelíceras paralelas</li>
+            <li>Corpo robusto</li>
+            <li>Constrói tocas</li>
+        </ul>
+    </div>
+
+    <div class="botoes">
+        <a href="/quiz">
+            <button class="botao">Nova Identificação</button>
+        </a>
+
+        <a href="/">
+            <button class="botao">Voltar ao Início</button>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
