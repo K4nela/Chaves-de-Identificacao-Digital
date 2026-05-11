@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from services.especie_service import criarEspecie
 
 app = Flask(__name__)
 
@@ -38,14 +39,23 @@ arvore = {
 }
 
 #populando os dados
-@app.route('/populando')
+@app.route('/', methods = ['GET', 'POST'])
 def popular():
-    return render_template('popular.html')
+    if request.method == 'GET':
+        return render_template('popular.html')
+    elif request.method == 'POST':
+        nome = request.form['nome']
+        tipo = request.form['tipo']
+        habitat = request.form['habitat']
+        descricao = request.form['descricao']
+        imagem = request.form['imagem']
+        criarEspecie(nome = nome, tipo = tipo, habitat = habitat, descricao = descricao, imagem = imagem)
+        return 'Usuário registrado!'
 
 # Home
-@app.route('/')
-def home():
-    return render_template("home.html")
+# @app.route('/')
+# def home():
+#     return render_template("home.html")
 
 
 # Início do quiz
@@ -63,36 +73,36 @@ def quiz():
 
 
 # Processar respostas
-@app.route("/responder", methods=["POST"])
-def responder():
-    etapa = request.form["etapa"]
-    resposta = request.form["resposta"]
-
-    proximo = arvore[etapa][resposta]
-
-    # Resultado final
-    if proximo not in arvore:
-        for r in resultados:
-            if r["tipo"] == proximo:
-                return render_template("resultado.html", resultado=r)
-
-        # fallback
-        return render_template("resultado.html", resultado={
-            "nome": "Não identificado",
-            "descricao": "Não foi possível identificar.",
-            "habitat": "-",
-            "imagem": "erro.jpg"
-        })
-
-    # próxima pergunta
-    progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
-
-    return render_template(
-        "pergunta.html",
-        etapa=proximo,
-        pergunta=arvore[proximo]["pergunta"],
-        progresso=progresso
-    )
+# @app.route("/responder", methods=["POST"])
+# def responder():
+#     etapa = request.form["etapa"]
+#     resposta = request.form["resposta"]
+#
+#     proximo = arvore[etapa][resposta]
+#
+#     # Resultado final
+#     if proximo not in arvore:
+#         for r in resultados:
+#             if r["tipo"] == proximo:
+#                 return render_template("resultado.html", resultado=r)
+#
+#         # fallback
+#         return render_template("resultado.html", resultado={
+#             "nome": "Não identificado",
+#             "descricao": "Não foi possível identificar.",
+#             "habitat": "-",
+#             "imagem": "erro.jpg"
+#         })
+#
+#     # próxima pergunta
+#     progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
+#
+#     return render_template(
+#         "pergunta.html",
+#         etapa=proximo,
+#         pergunta=arvore[proximo]["pergunta"],
+#         progresso=progresso
+#     )
 
 
 # Página de filtro
@@ -102,29 +112,29 @@ def filtro():
 
 
 # Resultado do filtro 
-@app.route("/resultado_filtro", methods=["POST"])
-def resultado_filtro():
-    tipo = request.form["tipo"]
-    habitat = request.form["habitat"]
-
-    resultados_filtrados = []
-
-    for aracnideo in resultados:
-        if (not tipo or aracnideo["tipo"] == tipo) and \
-           (not habitat or aracnideo["habitat"] == habitat):
-            resultados_filtrados.append(aracnideo)
-
-    # se encontrou
-    if resultados_filtrados:
-        return render_template("resultado.html", resultado=resultados_filtrados[0])
-
-    # se não encontrou
-    return render_template("resultado.html", resultado={
-        "nome": "Não encontrado",
-        "descricao": "Nenhum aracnídeo corresponde aos filtros.",
-        "habitat": "-",
-        "imagem": "erro.jpg"
-    })
+# @app.route("/resultado_filtro", methods=["POST"])
+# def resultado_filtro():
+#     tipo = request.form["tipo"]
+#     habitat = request.form["habitat"]
+#
+#     resultados_filtrados = []
+#
+#     for aracnideo in resultados:
+#         if (not tipo or aracnideo["tipo"] == tipo) and \
+#            (not habitat or aracnideo["habitat"] == habitat):
+#             resultados_filtrados.append(aracnideo)
+#
+#     # se encontrou
+#     if resultados_filtrados:
+#         return render_template("resultado.html", resultado=resultados_filtrados[0])
+#
+#     # se não encontrou
+#     return render_template("resultado.html", resultado={
+#         "nome": "Não encontrado",
+#         "descricao": "Nenhum aracnídeo corresponde aos filtros.",
+#         "habitat": "-",
+#         "imagem": "erro.jpg"
+#     })
 
 
 if __name__ == '__main__':
