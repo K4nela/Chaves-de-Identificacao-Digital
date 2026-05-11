@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+from flask import render_template, request
+from database import db
+from model.especie_model import Especie
 from services.especie_service import criarEspecie
 from main import app
 
@@ -37,7 +39,7 @@ arvore = {
     }
 }
 
-#populando os dados
+# Populando o banco de dados
 @app.route('/registrar', methods = ['GET', 'POST'])
 def popular():
     if request.method == 'GET':
@@ -50,12 +52,12 @@ def popular():
         imagem = request.form['imagem']
         criarEspecie(nome = nome, tipo = tipo, habitat = habitat, descricao = descricao, imagem = imagem)
         return render_template('registrar.html')
+    return None
 
 # Home
-# @app.route('/')
-# def home():
-#     return render_template("home.html")
-
+@app.route('/')
+def home():
+    return render_template("home.html")
 
 # Início do quiz
 @app.route("/quiz")
@@ -70,38 +72,43 @@ def quiz():
         progresso=progresso
     )
 
-
 # Processar respostas
-# @app.route("/responder", methods=["POST"])
-# def responder():
-#     etapa = request.form["etapa"]
-#     resposta = request.form["resposta"]
-#
-#     proximo = arvore[etapa][resposta]
-#
-#     # Resultado final
-#     if proximo not in arvore:
-#         for r in resultados:
-#             if r["tipo"] == proximo:
-#                 return render_template("resultado.html", resultado=r)
-#
-#         # fallback
-#         return render_template("resultado.html", resultado={
-#             "nome": "Não identificado",
-#             "descricao": "Não foi possível identificar.",
-#             "habitat": "-",
-#             "imagem": "erro.jpg"
-#         })
-#
-#     # próxima pergunta
-#     progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
-#
-#     return render_template(
-#         "pergunta.html",
-#         etapa=proximo,
-#         pergunta=arvore[proximo]["pergunta"],
-#         progresso=progresso
-#     )
+@app.route("/responder", methods=["POST"])
+def responder():
+    etapa = request.form["etapa"]
+    resposta = request.form["resposta"]
+
+    proximo = arvore[etapa][resposta]
+
+    resultados = db.session.query(Especie).all()
+
+    print(proximo)
+    print(resultados)
+
+    # Resultado final
+    if proximo not in arvore:
+        for r in resultados:
+
+            if r.tipo.lower() == proximo.lower():
+                return render_template("resultado.html", resultado = r)
+
+        # fallback
+        return render_template("resultado.html", resultado={
+            "nome": "Não identificado",
+            "descricao": "Não foi possível identificar.",
+            "habitat": "-",
+            "imagem": "erro.jpg"
+        })
+
+    # próxima pergunta
+    progresso = int((etapas_numero[proximo] / TOTAL_ETAPAS) * 100)
+
+    return render_template(
+        "pergunta.html",
+        etapa=proximo,
+        pergunta=arvore[proximo]["pergunta"],
+        progresso=progresso
+    )
 
 
 # Página de filtro

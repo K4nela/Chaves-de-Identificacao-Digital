@@ -5,28 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>inserindo dados</title>
 </head>
+
+<style>
+    body {
+        height: 90vh;
+    {#border: 1px solid black;#} display: grid;
+        justify-content: center;
+        align-content: center;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    section {
+        font-size: 32px;
+        flex: 1;
+    {#border: 1px solid black;#} text-align: end;
+    }
+
+    input {
+        font-size: 20px;
+        height: 30px;
+        width: 500px;
+        border-radius: 5px;
+        border: 1px solid gray;
+        padding-left: 10px;
+    }
+
+    .entrada::before{
+        content: " *";
+    }
+
+    form {
+    {#border: 1px solid gray;#} text-align: center;
+    }
+
+    button {
+        font-size: 32px;
+        border-radius: 5px;
+        border: 1px solid gray;
+        margin: 20px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: white;
+    }
+
+</style>
+
 <body>
-<form action="/registrar" method = 'POST'>
-    <label for="name">Nome:
-        <input type="text" name = 'nome'><br>
-    </label>
+<form action="/registrar" method='POST'>
+    <section>
+        <label for="name">Nome:
+            <input class="entrada" type="text" name='nome' required><br>
+        </label>
 
-    <label for="tipo">Tipo:
-        <input type="text" name = 'tipo'><br>
-    </label>
+        <label for="tipo">Tipo:
+            <input type="text" name='tipo' required><br>
+        </label>
 
-    <label for="habitat">Habitat:
-        <input type="text" name = 'habitat'><br>
-    </label>
-    <label for="descricao">Descricao:
-        <input type="text" name = 'descricao'><br>
-    </label>
+        <label for="habitat">Habitat:
+            <input type="text" name='habitat' required><br>
+        </label>
 
-    <label for="imagem">Imagem:
-        <input type="text" name = 'imagem'><br>
-    </label>
+        <label for="descricao">Descricao:
+            <input type="text" name='descricao' required><br>
+        </label>
 
+        <label for="imagem">Imagem:
+            <input type="text" name='imagem' required><br>
+        </label>
+
+    </section>
     <button type="submit">Enviar</button>
-    <br>
 </form>
 </body>
