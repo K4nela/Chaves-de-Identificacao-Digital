@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 from services.especie_service import criarEspecie
-
-app = Flask(__name__)
+from main import app
 
 TOTAL_ETAPAS = 4  # número total de perguntas
 # Etapas (para barra de progresso)
@@ -39,10 +38,10 @@ arvore = {
 }
 
 #populando os dados
-@app.route('/', methods = ['GET', 'POST'])
+@app.route('/registrar', methods = ['GET', 'POST'])
 def popular():
     if request.method == 'GET':
-        return render_template('popular.html')
+        return render_template('registrar.html')
     elif request.method == 'POST':
         nome = request.form['nome']
         tipo = request.form['tipo']
@@ -50,7 +49,7 @@ def popular():
         descricao = request.form['descricao']
         imagem = request.form['imagem']
         criarEspecie(nome = nome, tipo = tipo, habitat = habitat, descricao = descricao, imagem = imagem)
-        return 'Usuário registrado!'
+        return render_template('registrar.html')
 
 # Home
 # @app.route('/')
