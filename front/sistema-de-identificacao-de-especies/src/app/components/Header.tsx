@@ -49,16 +49,16 @@ export default function Header() {
               <span className="font-['Jaldi',sans-serif] text-lg">Buscar por Filtros</span>
             </Link>
 
-            <Link
-              to="/login"
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                isActive("/admin") || isActive("/login")
-                  ? "bg-[#798e3f] text-white"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <Settings className="w-5 h-5" />
-            </Link>
+            {/*<Link*/}
+            {/*  to="/login"*/}
+            {/*  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${*/}
+            {/*    isActive("/admin") || isActive("/login")*/}
+            {/*      ? "bg-[#798e3f] text-white"*/}
+            {/*      : "text-gray-700 hover:bg-gray-100"*/}
+            {/*  }`}*/}
+            {/*>*/}
+            {/*  <Settings className="w-5 h-5" />*/}
+            {/*</Link>*/}
           </nav>
 
           {/* Mobile menu button */}

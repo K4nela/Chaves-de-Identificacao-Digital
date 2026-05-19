@@ -301,12 +301,12 @@ export default function FilterSearch() {
             transition={{ delay: 0.7 }}
             className="mt-8"
           >
-            <Card className="p-6 bg-[#798e3f]/5 border-[#798e3f]/20">
-              <p className="font-['Jaldi',sans-serif] text-gray-700 text-center">
-                💡 <strong>Dica:</strong> Quanto mais filtros você selecionar, mais específico será o resultado. 
-                Comece com Reino e vá refinando aos poucos.
-              </p>
-            </Card>
+            {/*<Card className="p-6 bg-[#798e3f]/5 border-[#798e3f]/20">*/}
+            {/*  <p className="font-['Jaldi',sans-serif] text-gray-700 text-center">*/}
+            {/*    💡 <strong>Dica:</strong> Quanto mais filtros você selecionar, mais específico será o resultado. */}
+            {/*    Comece com Reino e vá refinando aos poucos.*/}
+            {/*  </p>*/}
+            {/*</Card>*/}
           </motion.div>
         </motion.div>
       </div>

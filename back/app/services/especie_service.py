@@ -1,12 +1,12 @@
-from database import db
-from model.especie_model import Especie
+from ..database.database import db
+from ..models.Especies import Especies
 
 def criarEspecie(nome, tipo, habitat, descricao, imagem):
 
     if any(not campo.strip() for campo in [nome, tipo, habitat, descricao, imagem]):
         return 'Preencha todos os campos!'
 
-    especie = Especie(
+    especie = Especies(
         nome = nome,
         tipo = tipo,
         habitat = habitat,
