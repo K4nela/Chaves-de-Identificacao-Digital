@@ -13,10 +13,10 @@ with app.app_context():
     db.create_all()
 
 
-from app.routes.especies import species_bp
-from app.routes.chaves import keys_bp
-app.register_blueprint(species_bp)
-app.register_blueprint(keys_bp)
+from app.routes.Especies import especies_bp
+from app.routes.Chaves import chaves_bp
+app.register_blueprint(especies_bp)
+app.register_blueprint(chaves_bp)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
