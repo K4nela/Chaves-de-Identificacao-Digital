@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Busca por Filtros</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f5f5f2;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .botao {
+            background-color: #6b8e23;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+        <h2>🔎 Busca por Filtros</h2>
+
+        <form action="/resultado_filtro" method="post">
+
+            <label>Tipo de Aranha:</label>
+            <select name="tipo">
+                <option value="">Qualquer</option>
+                <option value="caranguejeira">Caranguejeira</option>
+                <option value="aranha_alcapao">Aranha de Alçapão</option>
+                <option value="migalomorfa">Migalomorfa</option>
+            </select>
+
+            <label>Habitat:</label>
+            <select name="habitat">
+                <option value="">Qualquer</option>
+                <option value="solo">Solo</option>
+                <option value="toca">Toca</option>
+            </select>
+
+            <button class="botao" type="submit">Buscar</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
