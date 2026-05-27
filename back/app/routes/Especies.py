@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from ..models.Especies import Especies
 
-especies_bp = Blueprint("species", __name__)
+especies_bp = Blueprint("Especies", __name__)
 
 @especies_bp.route("/especies", methods=["GET"])
 def get_especies():

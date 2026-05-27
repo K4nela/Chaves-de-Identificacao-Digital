@@ -15,8 +15,10 @@ with app.app_context():
 
 from app.routes.Especies import especies_bp
 from app.routes.Chaves import chaves_bp
+from app.routes.Usuarios import usuarios_bp
 app.register_blueprint(especies_bp)
 app.register_blueprint(chaves_bp)
+app.register_blueprint(usuarios_bp)
 
 if __name__ == '__main__':
     app.run()

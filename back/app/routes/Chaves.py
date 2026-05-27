@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from ..models.Chaves import Chaves
 from ..models.Opcoes import Opcoes
-chaves_bp = Blueprint("keys", __name__)
+chaves_bp = Blueprint("Chaves", __name__)
 
 @chaves_bp.route("/chaves", methods=["GET"])
 def get_chaves():
@@ -42,7 +42,7 @@ def chave(id):
 
     return jsonify({
         "id": chave.id,
-        "text": chave.texto,
-        "category": chave.categoria,
+        "texto": chave.texto,
+        "categoria": chave.categoria,
         "opcoes": [o.to_dict() for o in opcoes]
     })
