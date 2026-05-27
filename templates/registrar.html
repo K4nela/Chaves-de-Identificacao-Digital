@@ -9,7 +9,7 @@
 <style>
     body {
         height: 90vh;
-    {#border: 1px solid black;#} display: grid;
+        {#border: 1px solid black;#} display: grid;
         justify-content: center;
         align-content: center;
         margin: 20px;
@@ -19,7 +19,7 @@
     section {
         font-size: 32px;
         flex: 1;
-    {#border: 1px solid black;#} text-align: end;
+        {#border: 1px solid black;#} text-align: end;
     }
 
     input {
@@ -31,12 +31,21 @@
         padding-left: 10px;
     }
 
+    select {
+        font-size: 20px;
+        height: 35px;
+        width: 515px;
+        border-radius: 5px;
+        border: 1px solid gray;
+        padding-left: 10px;
+    }
+
     .entrada::before{
         content: " *";
     }
 
     form {
-    {#border: 1px solid gray;#} text-align: center;
+     {#border: 1px solid gray;#} text-align: center;
     }
 
     button {
@@ -64,6 +73,24 @@
             <input type="text" name='tipo' required><br>
         </label>
 
+        <label for="familia">Família:
+        <select name="familia_id" required>
+
+        <option value="">
+            Selecione uma família
+        </option>
+
+        {% for familia in familias %}
+
+            <option value="{{ familia.id }}">
+                {{ familia.nome }}
+            </option>
+
+        {% endfor %}
+
+        </select><br>
+        </label>
+
         <label for="habitat">Habitat:
             <input type="text" name='habitat' required><br>
         </label>
@@ -80,3 +107,4 @@
     <button type="submit">Enviar</button>
 </form>
 </body>
+</html>

@@ -1,7 +1,16 @@
 from flask import render_template, request
 from database import db
+
 from model.especie_model import Especie
+from model.familia_model import Familia
+
+from model.chave_model import Chave
+
 from services.especie_service import criarEspecie
+from services.familia_service import criarFamilia
+
+from services.chave_service import criarChave
+
 from main import app
 
 TOTAL_ETAPAS = 4  # número total de perguntas
@@ -40,18 +49,46 @@ arvore = {
 }
 
 # Populando o banco de dados
-@app.route('/registrar', methods = ['GET', 'POST'])
+@app.route('/registrar', methods=['GET', 'POST'])
 def popular():
+
+    # GET
     if request.method == 'GET':
-        return render_template('registrar.html')
+
+        familias = db.session.query(Familia).all()
+
+        return render_template(
+            'registrar.html',
+            familias=familias
+        )
+
+    # POST
     elif request.method == 'POST':
+
         nome = request.form['nome']
         tipo = request.form['tipo']
         habitat = request.form['habitat']
         descricao = request.form['descricao']
         imagem = request.form['imagem']
-        criarEspecie(nome = nome, tipo = tipo, habitat = habitat, descricao = descricao, imagem = imagem)
-        return render_template('registrar.html')
+
+        familia_id = request.form['familia_id']
+
+        criarEspecie(
+            nome=nome,
+            tipo=tipo,
+            habitat=habitat,
+            descricao=descricao,
+            imagem=imagem,
+            familia_id=familia_id
+        )
+
+        familias = db.session.query(Familia).all()
+
+        return render_template(
+            'registrar.html',
+            familias=familias
+        )
+
     return None
 
 # Home
@@ -62,13 +99,19 @@ def home():
 # Início do quiz
 @app.route("/quiz")
 def quiz():
+
     etapa = "inicio"
-    progresso = int((etapas_numero[etapa] / TOTAL_ETAPAS) * 100)
+
+    chave = db.session.query(Chave).filter_by(
+        etapa=etapa
+    ).first()
+
+    progresso = 25
 
     return render_template(
         "pergunta.html",
         etapa=etapa,
-        pergunta=arvore[etapa]["pergunta"],
+        pergunta=chave.pergunta,
         progresso=progresso
     )
 
@@ -78,7 +121,14 @@ def responder():
     etapa = request.form["etapa"]
     resposta = request.form["resposta"]
 
-    proximo = arvore[etapa][resposta]
+    chave = db.session.query(Chave).filter_by(
+        etapa=etapa
+    ).first()
+
+    if resposta == "sim":
+        proximo = chave.resposta_sim
+    else:
+        proximo = chave.resposta_nao
 
     resultados = db.session.query(Especie).all()
 
@@ -86,7 +136,11 @@ def responder():
     print(resultados)
 
     # Resultado final
-    if proximo not in arvore:
+    proxima_chave = db.session.query(Chave).filter_by(
+        etapa=proximo
+    ).first()
+
+    if not proxima_chave:
         for r in resultados:
 
             if r.tipo.lower() == proximo.lower():
@@ -106,17 +160,64 @@ def responder():
     return render_template(
         "pergunta.html",
         etapa=proximo,
-        pergunta=arvore[proximo]["pergunta"],
+        pergunta=proxima_chave.pergunta,
         progresso=progresso
     )
-
 
 # Página de filtro
 @app.route("/filtro")
 def filtro():
     return render_template("filtro.html")
 
+@app.route('/registrar_chave', methods=['GET', 'POST'])
+def registrar_chave():
 
+    if request.method == 'GET':
+
+        return render_template(
+            'registrar_chave.html'
+        )
+
+    elif request.method == 'POST':
+
+        etapa = request.form['etapa']
+
+        pergunta = request.form['pergunta']
+
+        resposta_sim = request.form['resposta_sim']
+
+        resposta_nao = request.form['resposta_nao']
+
+        criarChave(
+            etapa,
+            pergunta,
+            resposta_sim,
+            resposta_nao
+        )
+
+        return render_template(
+            'registrar_chave.html'
+        )
+    
+@app.route('/registrar_familia', methods=['GET', 'POST'])
+def registrar_familia():
+
+    if request.method == 'GET':
+
+        return render_template(
+            'registrar_familia.html'
+        )
+
+    elif request.method == 'POST':
+
+        nome = request.form['nome']
+
+        criarFamilia(nome)
+
+        return render_template(
+            'registrar_familia.html'
+        )
+    
 # Resultado do filtro 
 # @app.route("/resultado_filtro", methods=["POST"])
 # def resultado_filtro():
