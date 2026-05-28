@@ -97,7 +97,7 @@ def home():
     return render_template("home.html")
 
 # Início do quiz
-@app.route("/quiz")
+@app.route("/guided")
 def quiz():
 
     etapa = "inicio"
