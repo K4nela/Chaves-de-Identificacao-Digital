@@ -1,6 +1,4 @@
 from flask import Blueprint, request, jsonify
-from flask_cors.core import serialize_options
-
 from ..models.Especies import Especies
 from ..models.Chaves import Chaves
 from ..models.Usuarios import Usuarios
@@ -8,7 +6,6 @@ from ..models.Opcoes import Opcoes
 from ..database.database import db
 
 usuarios_bp = Blueprint('usuarios', __name__)
-
 
 @usuarios_bp.route('/login', methods=['POST'])
 def login():
@@ -40,7 +37,6 @@ def login():
             "nome": usuario.nome
         }
     }), 200
-
 
 @usuarios_bp.route('/criar/chaves', methods=['POST'])
 def criar():
@@ -99,7 +95,6 @@ def criar():
         db.session.rollback()
         return jsonify({"erro": f"Erro ao criar chave: {str(e)}"}), 500
 
-
 @usuarios_bp.route('/criar/chaves/<int:id>', methods=['PUT'])
 def atualizar_chave(id):
     chave = Chaves.query.get_or_404(id)
@@ -125,6 +120,8 @@ def atualizar_chave(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"erro": f"Erro ao atualizar chave: {str(e)}"}), 500
+
+#criar o DELET (deletar as chaves)
 
 @usuarios_bp.route('/criar/especies', methods=['POST'])
 def criarEspecies():
@@ -176,3 +173,6 @@ def criarEspecies():
     except Exception as e:
         db.session.rollback()
         return jsonify({'erro': f'Erro ao criar espécie!{str(e)}'}), 500
+
+
+#criar o PUT (editar) e o DELET (deletar as espécies)
