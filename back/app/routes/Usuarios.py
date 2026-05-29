@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
+from flask_cors.core import serialize_options
 
+from ..models.Especies import Especies
 from ..models.Chaves import Chaves
 from ..models.Usuarios import Usuarios
 from ..models.Opcoes import Opcoes
@@ -10,22 +12,33 @@ usuarios_bp = Blueprint('usuarios', __name__)
 
 @usuarios_bp.route('/login', methods=['POST'])
 def login():
-    # Obtém o ID enviado no corpo da requisição (JSON)
+    """Login por usuário e senha"""
     dados = request.get_json()
 
-    # Verificação básica se o ID foi enviado
-    if not dados or 'id' not in dados:
-        return jsonify({"erro": "ID é obrigatório"}), 400
+    # Verificação se usuário e senha foram enviados
+    if not dados or 'nomeUsuario' not in dados or 'senha' not in dados:
+        return jsonify({"erro": "Usuário e senha são obrigatórios"}), 400
 
-    id_usuario = dados['id']
+    nome_usuario = dados['nomeUsuario']
+    senha = dados['senha']
 
-    # Busca o usuário ou retorna 404 se não existir
-    usuario = Usuarios.query.get_or_404(id_usuario)
+    # Busca o usuário pelo nome
+    usuario = Usuarios.query.filter_by(nome=nome_usuario).first()
 
-    # Retorna os dados do usuário (Login "simples" aprovado)
+    if not usuario:
+        return jsonify({"erro": "Usuário não encontrado"}), 404
+
+    # Verifica a senha (se você usar hash, use check_password_hash aqui)
+    if usuario.senha != senha:
+        return jsonify({"erro": "Senha incorreta"}), 401
+
+    # Login aprovado
     return jsonify({
-        "mensagem": "Login realizado",
-        "usuario": usuario.to_dict()
+        "mensagem": "Login realizado com sucesso",
+        "usuario": {
+            "id": usuario.id,
+            "nome": usuario.nome
+        }
     }), 200
 
 
@@ -42,15 +55,15 @@ def criar():
     try:
         # 1. Criar a chave
         novaChave = Chaves(
-            texto=dados['chave']['texto'],  # CORREÇÃO: usar ['texto'] não ('texto')
-            categoria=dados['chave'].get('categoria', '')  # CORREÇÃO: .get() com parênteses, não colchetes
+            texto=dados['chave']['texto'],
+            categoria=dados['chave'].get('categoria', '')
         )
-        db.session.add(novaChave)  # CORREÇÃO: adicionar a chave ANTES das opções
-        db.session.flush()  # CORREÇÃO: gerar o ID antes de usá-lo nas opções
+        db.session.add(novaChave)
+        db.session.flush()
 
         # 2. Criar opção 1
         opcao1 = Opcoes(
-            texto=dados['opcao1']['texto'],  # CORREÇÃO: usar ['texto'] não ('texto')
+            texto=dados['opcao1']['texto'],
             descricao=dados['opcao1'].get('descricao', ''),
             imgURL=dados['opcao1'].get('imgURL', ''),
             id_chave=novaChave.id,
@@ -61,7 +74,7 @@ def criar():
 
         # 3. Criar opção 2
         opcao2 = Opcoes(
-            texto=dados['opcao2']['texto'],  # CORREÇÃO: usar ['texto'] não ('texto')
+            texto=dados['opcao2']['texto'],
             descricao=dados['opcao2'].get('descricao', ''),
             imgURL=dados['opcao2'].get('imgURL', ''),
             id_chave=novaChave.id,
@@ -113,17 +126,53 @@ def atualizar_chave(id):
         db.session.rollback()
         return jsonify({"erro": f"Erro ao atualizar chave: {str(e)}"}), 500
 
-
-@usuarios_bp.route('/criar/especies', methods = ['POST'])
-def criar():
+@usuarios_bp.route('/criar/especies', methods=['POST'])
+def criarEspecies():
     dados = request.get_json()
 
-    if not dados or not 'nomeComum' in dados:
-        return jsonify({"erro": "Insira todos os dados!"})
+    if not dados:
+        return jsonify({'erro': 'Insira todos os campos!'}), 400
 
     try:
+        especie = Especies(
+            nomeComum=dados.get('nomeComum', ''),
+            nomeCientifico=dados.get('nomeCientifico', ''),
+            reino=dados.get('reino', ''),
+            filo=dados.get('filo', ''),
+            classe=dados.get('classe', ''),
+            ordem=dados.get('ordem', ''),
+            familia=dados.get('familia', ''),
+            genero=dados.get('genero', ''),
+            especie=dados.get('especie', ''),
+            descricao=dados.get('descricao', ''),
+            habitat=dados.get('habitat', ''),
+            caracteristicas=dados.get('caracteristicas', ''),
+            imgURL=dados.get('imgURL', '')
+        )
 
+        db.session.add(especie)
+        db.session.commit()
 
-
+        return jsonify({
+            'mensagem': 'Espécie criada com sucesso!',
+            'Especie': {
+                'id': especie.id,
+                'nomeComum': especie.nomeComum,
+                'nomeCientifico': especie.nomeCientifico,
+                'reino': especie.reino,
+                'filo': especie.filo,
+                'classe': especie.classe,
+                'ordem': especie.ordem,
+                'familia': especie.familia,
+                'genero': especie.genero,
+                'especie': especie.especie,
+                'descricao': especie.descricao,
+                'habitat': especie.habitat,
+                'caracteristicas': especie.caracteristicas,
+                'imgURL': especie.imgURL
+            }
+        }), 200
 
     except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Erro ao criar espécie!{str(e)}'}), 500
