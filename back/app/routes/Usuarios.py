@@ -12,24 +12,20 @@ def login():
     """Login por usuário e senha"""
     dados = request.get_json()
 
-    # Verificação se usuário e senha foram enviados
     if not dados or 'nomeUsuario' not in dados or 'senha' not in dados:
         return jsonify({"erro": "Usuário e senha são obrigatórios"}), 400
 
     nome_usuario = dados['nomeUsuario']
     senha = dados['senha']
 
-    # Busca o usuário pelo nome
     usuario = Usuarios.query.filter_by(nome=nome_usuario).first()
 
     if not usuario:
         return jsonify({"erro": "Usuário não encontrado"}), 404
 
-    # Verifica a senha (se você usar hash, use check_password_hash aqui)
     if usuario.senha != senha:
         return jsonify({"erro": "Senha incorreta"}), 401
 
-    # Login aprovado
     return jsonify({
         "mensagem": "Login realizado com sucesso",
         "usuario": {
@@ -49,7 +45,6 @@ def criar():
         return jsonify({"erro": "Os dados das duas alternativas são obrigatórias!"}), 400
 
     try:
-        # 1. Criar a chave
         novaChave = Chaves(
             texto=dados['chave']['texto'],
             categoria=dados['chave'].get('categoria', '')
@@ -57,7 +52,6 @@ def criar():
         db.session.add(novaChave)
         db.session.flush()
 
-        # 2. Criar opção 1
         opcao1 = Opcoes(
             texto=dados['opcao1']['texto'],
             descricao=dados['opcao1'].get('descricao', ''),
@@ -68,7 +62,6 @@ def criar():
         )
         db.session.add(opcao1)
 
-        # 3. Criar opção 2
         opcao2 = Opcoes(
             texto=dados['opcao2']['texto'],
             descricao=dados['opcao2'].get('descricao', ''),
@@ -78,8 +71,6 @@ def criar():
             id_proxima_chave=dados['opcao2'].get('id_proxima_chave')
         )
         db.session.add(opcao2)
-
-        # 4. Commit de tudo
         db.session.commit()
 
         return jsonify({
@@ -152,22 +143,7 @@ def criarEspecies():
 
         return jsonify({
             'mensagem': 'Espécie criada com sucesso!',
-            'Especie': {
-                'id': especie.id,
-                'nomeComum': especie.nomeComum,
-                'nomeCientifico': especie.nomeCientifico,
-                'reino': especie.reino,
-                'filo': especie.filo,
-                'classe': especie.classe,
-                'ordem': especie.ordem,
-                'familia': especie.familia,
-                'genero': especie.genero,
-                'especie': especie.especie,
-                'descricao': especie.descricao,
-                'habitat': especie.habitat,
-                'caracteristicas': especie.caracteristicas,
-                'imgURL': especie.imgURL
-            }
+            'Especie': especie.to_dict()
         }), 200
 
     except Exception as e:
@@ -175,4 +151,35 @@ def criarEspecies():
         return jsonify({'erro': f'Erro ao criar espécie!{str(e)}'}), 500
 
 
-#criar o PUT (editar) e o DELET (deletar as espécies)
+@usuarios_bp.route('/criar/especies/<int:id>', methods = ['PUT'])
+def editarEspecie(id):
+    especie = Especies.query.get_or_404(id)
+    dados = request.get_json()
+
+    try:
+        especie.nomeComum = dados.get('nomeComum', '') or especie.nomeComum
+        especie.nomeCientifico = dados.get('nomeCientifico', '') or especie.nomeCientifico
+        especie.reino = dados.get('reino', '') or especie.reino
+        especie.filo = dados.get('filo', '') or especie.filo
+        especie.classe = dados.get('classe', '') or especie.classe
+        especie.ordem = dados.get('ordem', '') or especie.ordem
+        especie.familia = dados.get('familia', '') or especie.familia
+        especie.genero = dados.get('genero', '') or especie.genero
+        especie.especie = dados.get('especie', '') or especie.especie
+        especie.descricao = dados.get('descricao', '') or especie.descricao
+        especie.habitat = dados.get('habitat', '') or especie.habitat
+        especie.caracteristicas = dados.get('caracteristicas', '') or especie.caracteristicas
+        especie.imgURL = dados.get('imgURL', '') or especie.imgURL
+
+        db.session.commit()
+
+        return jsonify({
+            'mensagem': 'Espécie criada com sucesso!',
+            'Especie': especie.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"erro": f"Erro ao atualizar chave: {str(e)}"}), 500
+
+
