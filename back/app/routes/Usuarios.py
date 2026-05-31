@@ -71,6 +71,7 @@ def criar():
             id_proxima_chave=dados['opcao2'].get('id_proxima_chave')
         )
         db.session.add(opcao2)
+
         db.session.commit()
 
         return jsonify({
@@ -87,7 +88,7 @@ def criar():
         return jsonify({"erro": f"Erro ao criar chave: {str(e)}"}), 500
 
 @usuarios_bp.route('/criar/chaves/<int:id>', methods=['PUT'])
-def atualizar_chave(id):
+def editarChave(id):
     chave = Chaves.query.get_or_404(id)
     dados = request.get_json()
 
@@ -112,7 +113,47 @@ def atualizar_chave(id):
         db.session.rollback()
         return jsonify({"erro": f"Erro ao atualizar chave: {str(e)}"}), 500
 
-#criar o DELET (deletar as chaves)
+@usuarios_bp.route('/criar/opcoes/<int:id>', methods=['PUT'])
+def editarOpcao(id):
+    opcao = Opcoes.query.get_or_404(id)
+    dados = request.get_json()
+
+    try:
+        if 'texto' in dados:
+            opcao.texto = dados['texto']
+        if 'descricao' in dados:
+            opcao.descricao = dados['descricao']
+        if 'imgURL' in dados:
+            opcao.imgURL = dados['imgURL']
+        if 'id_proxima_chave' in dados:
+            opcao.id_proxima_chave = dados['id_proxima_chave']
+        if 'id_especie' in dados:
+            opcao.id_especie = dados['id_especie']
+
+        db.session.commit()
+
+        return jsonify({"mensagem": "Opção atualizada!", "opcao": opcao.to_dict()}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"erro": str(e)}), 500
+
+
+@usuarios_bp.route('/chaves/<int:id>', methods=['DELETE'])
+def deletarChave(id):
+    chave = Chaves.query.get_or_404(id)
+
+    try:
+        Opcoes.query.filter_by(id_chave=id).delete()
+
+        db.session.delete(chave)
+        db.session.commit()
+
+        return jsonify({'mensagem': 'Chave deletada com sucesso!'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Não foi possível deletar chave: {str(e)}'}), 500
 
 @usuarios_bp.route('/criar/especies', methods=['POST'])
 def criarEspecies():
@@ -183,3 +224,16 @@ def editarEspecie(id):
         return jsonify({"erro": f"Erro ao atualizar chave: {str(e)}"}), 500
 
 
+@usuarios_bp.route('/especies/<int:id>', methods = ['DELETE'])
+def deletarEspecie(id):
+    especie = Especies.query.get_or_404(id)
+
+    try:
+        db.session.delete(especie)
+        db.session.commit()
+
+        return jsonify({'mensagem' : 'Espécie deletada com sucesso!'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro' : f'Não foi possível deletar espécie: {str(e)}'}), 500
