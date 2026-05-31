@@ -19,4 +19,4 @@ app.register_blueprint(chaves_bp)
 app.register_blueprint(usuarios_bp)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run()
